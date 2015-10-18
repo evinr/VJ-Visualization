@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>VJ Visualiztion PoC</title>
+
+<style>
+.content {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+    height: 5rem;
+    width: 5rem;
+    background-color:pink;
+}  
+
+</style>
+
+</head>
+<body>
+
+<audio class="content" id="myAudio" controls="">
+  <source src="http://stream.frenchkissfm.com/;stream.mp3" type="audio/mp3">  
+</audio>
+
+</body>
+<script>
+
+
+//http://www.patrick-wied.at/blog/how-to-create-audio-visualizations-with-javascript-html
+  window.onload = function() {
+  var ctx = new AudioContext();
+  var audio = document.getElementById('myAudio');
+  var audioSrc = ctx.createMediaElementSource(audio);
+  var analyser = ctx.createAnalyser();
+  // we have to connect the MediaElementSource with the analyser 
+  audioSrc.connect(analyser);
+  // we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
+
+  //attach the audio to the sound output
+  audioSrc.connect(ctx.destination);
+ 
+  // frequencyBinCount tells you how many values you'll receive from the analyser
+  var frequencyData = new Uint8Array(analyser.frequencyBinCount);
+ 
+  // we're ready to receive some data!
+  // loop
+  function renderFrame() {
+     requestAnimationFrame(renderFrame);
+     // update data in frequencyData
+     analyser.getByteFrequencyData(frequencyData);
+     // render frame based on values in frequencyData
+     // console.log(frequencyData)
+  }
+  audio.start();
+  renderFrame();
+};
+
+
+
+
+
+</script>
+
+</html>
